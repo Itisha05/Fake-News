@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="background-gradient"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <h2 class="nav-title">
+            <a href="/"><i class="fas fa-shield-halved"></i> Fake News Detection</a>
+        </h2>
+        <div>
+            <a href="/login" class="nav-btn">Login</a>
+            <a href="/signup" class="nav-btn btn-fill">Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- Background accents -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <!-- Hero Section -->
+    <div class="container hero-container">
+        <div class="hero">
+            <div class="hero-badge">
+                <i class="fas fa-star"></i> AI-Powered Detection
+            </div>
+            <h1>Detect Fake News with <span class="text-gradient">Machine Learning</span></h1>
+            <p>
+                Verify the authenticity of news articles using advanced machine learning
+                techniques deployed on cloud infrastructure. Protect yourself from misinformation.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="/login" class="btn btn-primary">Get Started <i class="fas fa-arrow-right"></i></a>
+                <a href="#how-it-works" class="btn btn-secondary">Learn More</a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">98%</span>
+                    <span class="stat-label">Accuracy</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">50K+</span>
+                    <span class="stat-label">Articles Analyzed</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Carousel Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why Choose Our Platform</h2>
+                <p>Advanced features designed to keep you informed and safe</p>
+            </div>
+
+            <div class="marquee-container">
+                <div class="marquee-track">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                        <div class="feature-content">
+                            <h3>AI-Powered</h3>
+                            <p>Advanced deep learning models analyze text patterns</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                        <div class="feature-content">
+                            <h3>Instant Results</h3>
+                            <p>Get real-time analysis in seconds</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-cloud"></i></div>
+                        <div class="feature-content">
+                            <h3>Cloud Deployed</h3>
+                            <p>Hosted on IBM Cloud for reliability</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-history"></i></div>
+                        <div class="feature-content">
+                            <h3>History Tracking</h3>
+                            <p>Keep track of all your searches</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+                        <div class="feature-content">
+                            <h3>Detailed Analytics</h3>
+                            <p>View comprehensive stats and trends</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-lock"></i></div>
+                        <div class="feature-content">
+                            <h3>Secure & Private</h3>
+                            <p>Industry-standard security encryption</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                        <div class="feature-content">
+                            <h3>AI-Powered</h3>
+                            <p>Advanced deep learning models analyze text patterns</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                        <div class="feature-content">
+                            <h3>Instant Results</h3>
+                            <p>Get real-time analysis in seconds</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-cloud"></i></div>
+                        <div class="feature-content">
+                            <h3>Cloud Deployed</h3>
+                            <p>Hosted on IBM Cloud for reliability</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-history"></i></div>
+                        <div class="feature-content">
+                            <h3>History Tracking</h3>
+                            <p>Keep track of all your searches</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+                        <div class="feature-content">
+                            <h3>Detailed Analytics</h3>
+                            <p>View comprehensive stats and trends</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-lock"></i></div>
+                        <div class="feature-content">
+                            <h3>Secure & Private</h3>
+                            <p>Industry-standard security encryption</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                </div>
+                <div class="marquee-track">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-envelope-open-text"></i></div>
+                        <div class="feature-content">
+                            <h3>Magic Link Login</h3>
+                            <p>Passwordless sign-in via secure email magic links</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-percent"></i></div>
+                        <div class="feature-content">
+                            <h3>Confidence Score</h3>
+                            <p>Every result includes a real/fake confidence percentage</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-magnifying-glass-chart"></i></div>
+                        <div class="feature-content">
+                            <h3>Fact-Check API</h3>
+                            <p>Cross-references claims via Google Fact Check Tools</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-newspaper"></i></div>
+                        <div class="feature-content">
+                            <h3>NewsAPI Sources</h3>
+                            <p>Verifies headlines against 80,000+ trusted news outlets</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-face-meh"></i></div>
+                        <div class="feature-content">
+                            <h3>Sentiment Analysis</h3>
+                            <p>VADER model detects emotional tone and bias in text</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-triangle-exclamation"></i></div>
+                        <div class="feature-content">
+                            <h3>Misinfo Detector</h3>
+                            <p>Built-in patterns catch 5G, vaccine &amp; conspiracy claims</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-envelope-open-text"></i></div>
+                        <div class="feature-content">
+                            <h3>Magic Link Login</h3>
+                            <p>Passwordless sign-in via secure email magic links</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-percent"></i></div>
+                        <div class="feature-content">
+                            <h3>Confidence Score</h3>
+                            <p>Every result includes a real/fake confidence percentage</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-magnifying-glass-chart"></i></div>
+                        <div class="feature-content">
+                            <h3>Fact-Check API</h3>
+                            <p>Cross-references claims via Google Fact Check Tools</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-newspaper"></i></div>
+                        <div class="feature-content">
+                            <h3>NewsAPI Sources</h3>
+                            <p>Verifies headlines against 80,000+ trusted news outlets</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-face-meh"></i></div>
+                        <div class="feature-content">
+                            <h3>Sentiment Analysis</h3>
+                            <p>VADER model detects emotional tone and bias in text</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-triangle-exclamation"></i></div>
+                        <div class="feature-content">
+                            <h3>Misinfo Detector</h3>
+                            <p>Built-in patterns catch 5G, vaccine &amp; conspiracy claims</p>
+                        </div>
+                        <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+
+    <!-- How it Works Section -->
+    <section id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>How the System Works</h2>
+                <p>Simple three-step process to verify any news article</p>
+            </div>
+
+            <div class="cards">
+                <div class="card step-card">
+                    <div class="step-number">01</div>
+                    <h3>Submit News</h3>
+                    <p>
+                        Users submit news articles through a secure web interface
+                        for verification.
+                    </p>
+                    <div class="step-icon"><i class="fas fa-pen-to-square"></i></div>
+                </div>
+
+                <div class="card step-card">
+                    <div class="step-number">02</div>
+                    <h3>AI-Based Analysis</h3>
+                    <p>
+                        Machine learning models analyze the content using learned
+                        linguistic and semantic features.
+                    </p>
+                    <div class="step-icon"><i class="fas fa-robot"></i></div>
+                </div>
+
+                <div class="card step-card">
+                    <div class="step-number">03</div>
+                    <h3>Get Result</h3>
+                    <p>
+                        The system classifies the article as real or fake and
+                        displays the result instantly.
+                    </p>
+                    <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>What People Say</h2>
+                <p>Trusted by users worldwide</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"This tool has been invaluable in helping me verify news before sharing. The accuracy is
+                            impressive!"</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">JD</div>
+                        <div class="author-info">
+                            <h4>John Doe</h4>
+                            <span>Journalist</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"As a researcher, I rely on this platform to verify sources. It's become an essential part of
+                            my workflow."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">SM</div>
+                        <div class="author-info">
+                            <h4>Sarah Miller</h4>
+                            <span>Researcher</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"Simple, fast, and accurate. This is exactly what we need in the age of misinformation."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">RC</div>
+                        <div class="author-info">
+                            <h4>Robert Chen</h4>
+                            <span>Student</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-box">
+                <div class="cta-content">
+                    <h2>Ready to Fight Fake News?</h2>
+                    <p>Join thousands of users who trust our platform for news verification</p>
+                    <a href="/signup" class="btn btn-primary btn-large">Get Started For Free <i
+                            class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="cta-decoration">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3><i class="fas fa-shield-halved"></i> Fake News Detection</h3>
+                    <p>Protecting you from misinformation with AI-powered detection</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">About</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+            <p class="footer-copyright">© Fake News Detection System – IBM Training Project</p>
+        </div>
+    </footer>
+
+    <script>
+        // Pause marquee on hover
+        const marqueeTracks = document.querySelectorAll('.marquee-track');
+        marqueeTracks.forEach(track => {
+            track.addEventListener('mouseenter', () => {
+                track.style.animationPlayState = 'paused';
+            });
+            track.addEventListener('mouseleave', () => {
+                track.style.animationPlayState = 'running';
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                nav.style.background = 'rgba(255, 255, 255, 0.85)';
+            } else {
+                nav.style.background = 'rgba(255, 255, 255, 0.55)';
+            }
+        });
+
+    </script>
+</body>
+
+</html>

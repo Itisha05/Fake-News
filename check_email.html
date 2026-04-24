@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Your Email | Fake News Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="background-gradient"></div>
+
+    <nav class="navbar">
+        <h2 class="nav-title">
+            <a href="/">Fake News Detection</a>
+        </h2>
+    </nav>
+
+    <div class="auth-container">
+        <div class="auth-card" style="text-align: center;">
+            <div style="font-size: 64px; color: #d25176; margin-bottom: 24px;">
+                <i class="fas fa-paper-plane"></i>
+            </div>
+            <h1>Check Your Email</h1>
+            <p style="font-size: 16px; line-height: 1.6;">
+                We've sent a <strong>Magic Login Link</strong> to your email address.
+                Click the link in the email to log in instantly.
+            </p>
+
+            <div
+                style="margin-top: 32px; padding: 16px; background: #fff5f7; border-radius: 12px; border: 1px solid #fce7eb;">
+                <p style="margin: 0; color: #9f1239; font-size: 14px;">
+                    <i class="fas fa-info-circle"></i> The link will expire in 10 minutes.
+                </p>
+            </div>
+
+            <p class="auth-footer" style="margin-top: 40px;">
+                Didn't get the email? <a href="/login">Try again</a> or check your spam folder.
+            </p>
+        </div>
+    </div>
+
+    <footer>
+        <p>© Fake News Detection System – IBM Training Project</p>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta charset="UTF-8">
+    <title>Login | Fake News Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+
+<body>
+    <div class="background-gradient"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <h2 class="nav-title">
+            <a href="/">Fake News Detection</a>
+        </h2>
+        <div>
+            <a href="/signup" class="nav-btn">Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- Background blobs -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+
+    <!-- Auth Container -->
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1>Welcome Back</h1>
+            <p>Please log in to continue</p>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}"
+                style="padding: 12px; margin-bottom: 15px; border-radius: 8px; font-size: 14px; {% if category == 'error' %}background-color: #fee; border: 1px solid #fcc; color: #c33;{% else %}background-color: #efe; border: 1px solid #cfc; color: #3c3;{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="/login">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Enter your email" required>
+
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Enter your password" required>
+
+                
+            <div class="g-recaptcha" data-sitekey="{{ RECAPTCHA_SITE_KEY }}" style="margin-bottom:15px;"></div>
+            <button type="submit" class="btn btn-primary">
+                    Login
+                </button>
+            </form>
+
+            <p class="auth-footer">
+                Don’t have an account?
+                <a href="/signup">Sign up</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© Fake News Detection System – IBM Training Project</p>
+    </footer>
+
+</body>
+
+</html>

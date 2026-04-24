@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Fake News Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <div class="background-gradient"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar dashboard-navbar">
+        <h2 class="nav-title">
+            <a href="/">Fake News Detection</a>
+        </h2>
+        <div class="nav-right">
+            <a href="/dashboard" class="nav-btn active">Dashboard</a>
+            <a href="/login" class="nav-btn">Logout</a>
+        </div>
+    </nav>
+
+    <div class="app-layout">
+        <!-- Clean Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Logo -->
+            <div class="sidebar-logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>TruthGuard</span>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="sidebar-nav">
+                <a href="javascript:void(0)" onclick="showTab('dashboard')" id="nav-dashboard" class="nav-item active"
+                    title="Dashboard">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                    {% if history %}
+                    <span class="nav-badge">{{ history|length }}</span>
+                    {% endif %}
+                </a>
+                <a href="javascript:void(0)" onclick="showTab('history')" id="nav-history" class="nav-item"
+                    title="History">
+                    <i class="fas fa-history"></i>
+                    <span>History</span>
+                </a>
+                <a href="javascript:void(0)" onclick="showTab('analytics')" id="nav-analytics" class="nav-item"
+                    title="Analytics">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="javascript:void(0)" onclick="showTab('settings')" id="nav-settings" class="nav-item"
+                    title="Settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <!-- User Profile -->
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    {{ user.name[0]|upper if user and user.name else 'U' }}
+                </div>
+                <div class="user-details">
+                    <span class="user-name">{{ user.name if user else 'User' }}</span>
+                    <span class="user-email">{{ user.email if user else 'user@example.com' }}</span>
+                </div>
+                <a href="/login" class="logout-btn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Dashboard Tab -->
+            <div id="tab-dashboard" class="tab-content active">
+                <!-- Welcome Section -->
+                <div class="welcome-section">
+                    <div class="welcome-content">
+                        <h1 class="welcome-title">
+                            {% if current_hour < 12 %}Good Morning{% elif current_hour < 18 %}Good Afternoon{% else
+                                %}Good Evening{% endif %}, <span class="user-highlight">{{ user.name.split()[0] if user
+                                and user.name else 'User' }}</span>! 👋
+                        </h1>
+                        <p class="welcome-subtitle">Ready to verify the truth today? You have verified {{ history|length
+                            }} articles so far.</p>
+                    </div>
+                    <div class="quick-actions">
+                        <button onclick="focusAnalyzer()" class="btn-quick-action">
+                            <i class="fas fa-plus"></i> New Analysis
+                        </button>
+                        <button onclick="showTab('history')" class="btn-quick-action secondary">
+                            <i class="fas fa-clock"></i> Recent
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards Row -->
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-value">{{ history|length }}</span>
+                            <span class="stat-label">Total Checks</span>
+                        </div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>Active</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card success">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-value">{{ real_count }}</span>
+                            <span class="stat-label">Verified Real</span>
+                        </div>
+                        <div class="stat-trend">
+                            <span>{{ real_percentage }}%</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card danger">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-value">{{ fake_count }}</span>
+                            <span class="stat-label">Detected Fake</span>
+                        </div>
+                        <div class="stat-trend">
+                            <span>{{ fake_percentage }}%</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card info">
+                        <div class="stat-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-value">{{ avg_confidence }}%</span>
+                            <span class="stat-label">Avg Confidence</span>
+                        </div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>High</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <!-- Content Analyzer Panel -->
+                    <div class="panel analyzer-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-microscope"></i> Content Analyzer</h3>
+                            <span class="panel-badge ai-badge">
+                                <i class="fas fa-robot"></i> AI Powered
+                            </span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="input-mode-toggle">
+                                <button type="button" class="mode-btn active" id="mode-text"
+                                    onclick="setInputMode('text')">
+                                    <i class="fas fa-keyboard"></i> Paste Text
+                                </button>
+                                <button type="button" class="mode-btn" id="mode-url" onclick="setInputMode('url')">
+                                    <i class="fas fa-link"></i> Enter URL
+                                </button>
+                            </div>
+                            <form id="check-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <div class="input-group" id="text-input-group">
+                                    <textarea id="news-content"
+                                        placeholder="Paste the news article, headline, or suspicious claim here for AI verification..."
+                                        class="analyzer-textarea"></textarea>
+                                    <div class="input-actions">
+                                        <button type="button" class="btn-icon" onclick="clearText()" title="Clear">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button type="button" class="btn-icon" onclick="pasteText()" title="Paste">
+                                            <i class="fas fa-paste"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="input-group" id="url-input-group" style="display: none;">
+                                    <div class="url-input-wrapper">
+                                        <i class="fas fa-link url-icon"></i>
+                                        <input type="url" id="news-url" placeholder="https://example.com/news-article"
+                                            class="analyzer-input">
+                                    </div>
+                                    <div class="input-actions">
+                                        <button type="button" class="btn-icon" onclick="clearUrl()" title="Clear">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button type="button" class="btn-icon" onclick="pasteUrl()" title="Paste URL">
+                                            <i class="fas fa-paste"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button type="submit" id="analyze-btn" class="btn-analyze">
+                                    <i class="fas fa-search"></i> Run AI Verification
+                                </button>
+                            </form>
+
+                            <!-- Result Panel -->
+                            <div id="detailed-result" class="result-panel" style="display: none;">
+                                <div class="result-header">
+                                    <div class="result-status" id="status-container">
+                                        <i class="fas fa-check-circle" id="status-icon"></i>
+                                        <h2 id="status-text">REAL NEWS</h2>
+                                    </div>
+                                    <span class="ai-analyzed-badge">
+                                        <i class="fas fa-robot"></i> AI Analyzed
+                                    </span>
+                                </div>
+
+                                <div class="confidence-section">
+                                    <div class="confidence-header">
+                                        <span>Confidence Score</span>
+                                        <span id="confidence-value" class="confidence-score">85%</span>
+                                    </div>
+                                    <div class="confidence-bar-container">
+                                        <div id="confidence-bar" class="confidence-bar"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Article Title (URL mode) -->
+                                <div id="result-article-title" class="result-article-title" style="display:none;"></div>
+
+                                <!-- BERT Dual Probability Breakdown -->
+                                <div id="bert-probs-section" class="bert-probs-section" style="display:none;">
+                                    <div class="bert-probs-header">
+                                        <i class="fas fa-brain"></i>
+                                        <span>Ensemble AI Breakdown</span>
+                                        <span class="bert-badge">bert + fact-check</span>
+                                    </div>
+                                    <div class="bert-prob-row">
+                                        <span class="prob-label real-label"><i class="fas fa-check-circle"></i>
+                                            Real</span>
+                                        <div class="prob-bar-wrap">
+                                            <div id="bert-real-bar" class="prob-bar real-bar"></div>
+                                        </div>
+                                        <span id="bert-real-val" class="prob-value">0%</span>
+                                    </div>
+                                    <div class="bert-prob-row">
+                                        <span class="prob-label fake-label"><i class="fas fa-times-circle"></i>
+                                            Fake</span>
+                                        <div class="prob-bar-wrap">
+                                            <div id="bert-fake-bar" class="prob-bar fake-bar"></div>
+                                        </div>
+                                        <span id="bert-fake-val" class="prob-value">0%</span>
+                                    </div>
+                                </div>
+
+                                <div class="result-details">
+                                    <p id="result-summary"></p>
+                                    <div id="result-indicators" class="result-indicators"></div>
+                                </div>
+
+                                <div class="result-actions">
+                                    <button onclick="saveToHistory()" class="btn-result">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                    <button onclick="shareResult()" class="btn-result">
+                                        <i class="fas fa-share"></i> Share
+                                    </button>
+                                    <button onclick="newAnalysis()" class="btn-result primary">
+                                        <i class="fas fa-redo"></i> New
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side Panels -->
+                    <div class="side-panels">
+                        <!-- Distribution Chart -->
+                        <div class="panel chart-panel">
+                            <div class="panel-header">
+                                <h4><i class="fas fa-chart-pie"></i> Distribution</h4>
+                            </div>
+                            <div class="panel-body">
+                                <div class="chart-container">
+                                    <canvas id="reliabilityChart"></canvas>
+                                    <div class="chart-center-text">
+                                        <span class="chart-total">{{ history|length }}</span>
+                                        <span class="chart-label">Checks</span>
+                                    </div>
+                                </div>
+                                <div class="chart-legend">
+                                    <div class="legend-item">
+                                        <span class="legend-color real"></span>
+                                        <span class="legend-label">Real</span>
+                                        <span class="legend-value">{{ real_count }}</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color fake"></span>
+                                        <span class="legend-label">Fake</span>
+                                        <span class="legend-value">{{ fake_count }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Distribution Chart -->
+
+                        <!-- Recent Activity -->
+                        {% if history %}
+                        <div class="panel activity-panel">
+                            <div class="panel-header">
+                                <h4><i class="fas fa-clock"></i> Recent Activity</h4>
+                                <a href="javascript:void(0)" onclick="showTab('history')" class="view-all">View All</a>
+                            </div>
+                            <div class="panel-body">
+                                <div class="activity-list">
+                                    {% for item in history[:3] %}
+                                    <div class="activity-item">
+                                        <div
+                                            class="activity-icon {{ 'success' if item.status == 'Real' else 'danger' }}">
+                                            <i
+                                                class="fas {{ 'fa-check' if item.status == 'Real' else 'fa-times' }}"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <p class="activity-text">{{ item.content[:40] }}...</p>
+                                            <span class="activity-time">{{ item.timestamp }}</span>
+                                        </div>
+                                        <span
+                                            class="activity-status {{ 'success' if item.status == 'Real' else 'danger' }}">
+                                            {{ item.status }}
+                                        </span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div id="tab-history" class="tab-content">
+                <div class="page-header">
+                    <div>
+                        <h1><i class="fas fa-history"></i> Analysis History</h1>
+                        <p>Track and manage your previous news authenticity checks</p>
+                    </div>
+                    <div class="page-actions">
+                        <button onclick="exportHistory()" class="btn-action">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                        <button onclick="clearHistory()" class="btn-action danger">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-bar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="history-search" placeholder="Search history..."
+                            onkeyup="filterHistory()">
+                    </div>
+                    <div class="filter-group">
+                        <select id="filter-status" onchange="filterHistory()">
+                            <option value="">All Status</option>
+                            <option value="Real">Real</option>
+                            <option value="Fake">Fake</option>
+                        </select>
+                        <select id="filter-date" onchange="filterHistory()">
+                            <option value="">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- History List -->
+                <div class="history-container">
+                    {% if history %}
+                    <div class="history-list" id="history-list">
+                        {% for item in history %}
+                        <div class="history-card" data-status="{{ item.status }}"
+                            data-content="{{ item.content.lower() }}">
+                            <div class="history-main">
+                                <div class="history-status-icon {{ 'success' if item.status == 'Real' else 'danger' }}">
+                                    <i class="fas {{ 'fa-check' if item.status == 'Real' else 'fa-times' }}"></i>
+                                </div>
+                                <div class="history-content">
+                                    <p class="history-text">{{ item.content }}</p>
+                                    <div class="history-meta">
+                                        <span><i class="fas fa-calendar"></i> {{ item.timestamp }}</span>
+                                        <span><i class="fas fa-chart-line"></i> {{ item.confidence }}% confidence</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="history-actions">
+                                <span class="history-badge {{ 'success' if item.status == 'Real' else 'danger' }}">
+                                    {{ item.status }}
+                                </span>
+                                <button class="btn-icon-small" onclick="viewDetails('{{ loop.index }}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-icon-small" onclick="deleteItem('{{ loop.index }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h3>No History Yet</h3>
+                        <p>Start by verifying some news articles!</p>
+                        <button onclick="showTab('dashboard')" class="btn-primary">
+                            <i class="fas fa-plus"></i> Start Analyzing
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="tab-analytics" class="tab-content">
+                <div class="page-header">
+                    <div>
+                        <h1><i class="fas fa-chart-pie"></i> Your Analytics</h1>
+                        <p>Detailed insights into your verification patterns</p>
+                    </div>
+                    <div class="date-range-selector">
+                        <button class="range-btn active" data-range="7days" onclick="setDateRange('7days')">7
+                            Days</button>
+                        <button class="range-btn" data-range="30days" onclick="setDateRange('30days')">30 Days</button>
+                        <button class="range-btn" data-range="alltime" onclick="setDateRange('alltime')">All
+                            Time</button>
+                    </div>
+                </div>
+
+                <!-- Analytics Stats Row -->
+                <div class="analytics-stats-grid">
+                    <div class="analytics-stat-card">
+                        <div class="stat-icon-large primary-bg">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label-large">Activity Score</span>
+                            <span class="stat-value-large" id="trust-score-value">{{ trust_score }}%</span>
+                            <span class="stat-description">Based on real news verifications</span>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar" style="width: {{ trust_score }}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-stat-card">
+                        <div class="stat-icon-large warning-bg">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label-large">Fake Detection Rate</span>
+                            <span class="stat-value-large" id="fake-rate-value">{{ fake_percentage }}%</span>
+                            <span class="stat-description">Of your total checks</span>
+                        </div>
+                        <div class="stat-progress warning">
+                            <div class="progress-bar" style="width: {{ fake_percentage }}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-stat-card">
+                        <div class="stat-icon-large success-bg">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label-large">AI Confidence</span>
+                            <span class="stat-value-large" id="accuracy-value">{{ avg_confidence }}%</span>
+                            <span class="stat-description">Average detection confidence</span>
+                        </div>
+                        <div class="stat-progress success">
+                            <div class="progress-bar" style="width: {{ avg_confidence }}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-stat-card">
+                        <div class="stat-icon-large info-bg">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label-large">Your Rank</span>
+                            <span class="stat-value-large" id="rank-value">Top {{ 100 - user_rank_percentile }}%</span>
+                            <span class="stat-description">Among all users</span>
+                        </div>
+                        <div class="stat-badge">
+                            <i class="fas fa-star"></i> Top Performer
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="analytics-section">
+                    <div class="analytics-section-header">
+                        <h2><i class="fas fa-chart-line"></i> Activity Overview</h2>
+                        <span class="section-subtitle">Track your verification activity over time</span>
+                    </div>
+
+                    <!-- Activity Timeline - Full Width -->
+                    <div class="analytics-card full-width">
+                        <div class="analytics-header">
+                            <h3><i class="fas fa-calendar-check"></i> Daily Activity</h3>
+                            <div class="analytics-actions">
+                                <button class="btn-icon-small" onclick="refreshAnalytics()">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="analytics-body">
+                            <div class="chart-wrapper large">
+                                <canvas id="activityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="analytics-grid">
+                    <!-- Verification Trends -->
+                    <div class="analytics-card">
+                        <div class="analytics-header">
+                            <h3><i class="fas fa-chart-bar"></i> Weekly Trends</h3>
+                        </div>
+                        <div class="analytics-body">
+                            <div class="chart-wrapper">
+                                <canvas id="trendsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Confidence Distribution -->
+                    <div class="analytics-card">
+                        <div class="analytics-header">
+                            <h3><i class="fas fa-signal"></i> Confidence Levels</h3>
+                        </div>
+                        <div class="analytics-body">
+                            <div class="chart-wrapper">
+                                <canvas id="confidenceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personalized Insights -->
+                    <div class="analytics-card">
+                        <div class="analytics-header">
+                            <h3><i class="fas fa-lightbulb"></i> Personalized Insights</h3>
+                        </div>
+                        <div class="analytics-body">
+                            {% if insights %}
+                            <div class="insights-list">
+                                {% for insight in insights %}
+                                <div class="insight-item">
+                                    <div class="insight-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="insight-content">
+                                        <span class="insight-value">{{ insight }}</span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p style="text-align: center; color: #888; padding: 20px;">Perform more analyses to unlock
+                                personalized insights!</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Key Statistics -->
+                    <div class="analytics-card">
+                        <div class="analytics-header">
+                            <h3><i class="fas fa-star"></i> Key Statistics</h3>
+                        </div>
+                        <div class="analytics-body">
+                            <div class="stats-grid-compact">
+                                <div class="stat-compact">
+                                    <div class="stat-compact-icon">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </div>
+                                    <div class="stat-compact-content">
+                                        <span class="stat-compact-label">Most Active Day</span>
+                                        <span class="stat-compact-value" id="active-day">{{ most_active_day }}</span>
+                                    </div>
+                                </div>
+                                <div class="stat-compact">
+                                    <div class="stat-compact-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="stat-compact-content">
+                                        <span class="stat-compact-label">Peak Hour</span>
+                                        <span class="stat-compact-value" id="peak-hour">{{ most_active_hour }}:00</span>
+                                    </div>
+                                </div>
+                                <div class="stat-compact">
+                                    <div class="stat-compact-icon fire">
+                                        <i class="fas fa-fire"></i>
+                                    </div>
+                                    <div class="stat-compact-content">
+                                        <span class="stat-compact-label">Current Streak</span>
+                                        <span class="stat-compact-value" id="streak">{{ streak_days }} days</span>
+                                    </div>
+                                </div>
+                                <div class="stat-compact">
+                                    <div class="stat-compact-icon">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <div class="stat-compact-content">
+                                        <span class="stat-compact-label">Platform Average</span>
+                                        <span class="stat-compact-value" id="platform-avg">{{ platform_avg_checks }}
+                                            checks</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="analytics-summary">
+                    <div class="summary-card">
+                        <div class="summary-icon real">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div class="summary-content">
+                            <span class="summary-value">{{ real_count }}</span>
+                            <span class="summary-label">Real News Verified</span>
+                        </div>
+                        <div class="summary-percentage">{{ real_percentage }}%</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon fake">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="summary-content">
+                            <span class="summary-value">{{ fake_count }}</span>
+                            <span class="summary-label">Fake News Detected</span>
+                        </div>
+                        <div class="summary-percentage">{{ fake_percentage }}%</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon total">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="summary-content">
+                            <span class="summary-value">{{ history|length }}</span>
+                            <span class="summary-label">Total Analyzed</span>
+                        </div>
+                        <div class="summary-percentage">100%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="tab-settings" class="tab-content">
+                <div class="page-header">
+                    <div>
+                        <h1><i class="fas fa-cog"></i> Settings</h1>
+                        <p>Manage your account preferences and profile</p>
+                    </div>
+                </div>
+
+                <div class="settings-grid">
+                    <!-- Profile Card -->
+                    <div class="settings-card profile-card">
+                        <div class="settings-header">
+                            <h3><i class="fas fa-user-circle"></i> Profile Information</h3>
+                        </div>
+                        <div class="settings-body">
+                            <form id="profile-form" class="settings-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Full Name</label>
+                                        <div class="input-wrapper">
+                                            <i class="fas fa-user"></i>
+                                            <input type="text" id="setting-name" name="name"
+                                                placeholder="Your full name">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email Address</label>
+                                        <div class="input-wrapper">
+                                            <i class="fas fa-envelope"></i>
+                                            <input type="email" id="setting-email" disabled>
+                                            <span class="verified-badge"><i class="fas fa-check-circle"></i>
+                                                Verified</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Phone Number</label>
+                                        <div class="input-wrapper">
+                                            <i class="fas fa-phone"></i>
+                                            <input type="tel" id="setting-phone" placeholder="Add phone number">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Country</label>
+                                        <div class="input-wrapper">
+                                            <i class="fas fa-globe"></i>
+                                            <input type="text" id="setting-country" placeholder="Your country">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-save">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Preferences Card -->
+                    <div class="settings-card">
+                        <div class="settings-header">
+                            <h3><i class="fas fa-sliders-h"></i> Preferences</h3>
+                        </div>
+                        <div class="settings-body">
+                            <div class="preference-list">
+                                <div class="preference-item">
+                                    <div class="preference-info">
+                                        <span class="preference-title">Email Notifications</span>
+                                        <span class="preference-desc">Receive weekly summary emails</span>
+                                    </div>
+                                    <label class="toggle">
+                                        <input type="checkbox" id="pref-email"
+                                            onchange="savePreference('email_notifications', this.checked)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="preference-item">
+                                    <div class="preference-info">
+                                        <span class="preference-title">Dark Mode</span>
+                                        <span class="preference-desc">Switch to dark theme</span>
+                                    </div>
+                                    <label class="toggle">
+                                        <input type="checkbox" id="pref-dark" onchange="toggleDarkMode(this.checked)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="preference-item">
+                                    <div class="preference-info">
+                                        <span class="preference-title">Auto-save History</span>
+                                        <span class="preference-desc">Automatically save all checks</span>
+                                    </div>
+                                    <label class="toggle">
+                                        <input type="checkbox" id="pref-autosave"
+                                            onchange="savePreference('auto_save_history', this.checked)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="preference-item">
+                                    <div class="preference-info">
+                                        <span class="preference-title">Show Confidence Score</span>
+                                        <span class="preference-desc">Display AI confidence in results</span>
+                                    </div>
+                                    <label class="toggle">
+                                        <input type="checkbox" id="pref-confidence"
+                                            onchange="savePreference('show_confidence', this.checked)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Card -->
+                    <div class="settings-card">
+                        <div class="settings-header">
+                            <h3><i class="fas fa-shield-alt"></i> Security</h3>
+                        </div>
+                        <div class="settings-body">
+                            <div class="security-list">
+                                <div class="security-item">
+                                    <div class="security-info">
+                                        <span class="security-title">Change Password</span>
+                                        <span class="security-desc">Update your account password</span>
+                                    </div>
+                                    <button class="btn-action-small" onclick="openPasswordModal()">Update</button>
+                                </div>
+                                <div class="security-item">
+                                    <div class="security-info">
+                                        <span class="security-title">Two-Factor Authentication</span>
+                                        <span class="security-desc">Add extra security layer</span>
+                                    </div>
+                                    <button class="btn-action-small" onclick="enable2FA()">Enable</button>
+                                </div>
+                                <div class="security-item">
+                                    <div class="security-info">
+                                        <span class="security-title">Login History</span>
+                                        <span class="security-desc">View recent login activity</span>
+                                    </div>
+                                    <button class="btn-action-small" onclick="viewLoginHistory()">View</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Actions -->
+                    <div class="settings-card danger-zone">
+                        <div class="settings-header">
+                            <h3><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+                        </div>
+                        <div class="settings-body">
+                            <div class="danger-actions">
+                                <div class="danger-item">
+                                    <div class="danger-info">
+                                        <span class="danger-title">Export All Data</span>
+                                        <span class="danger-desc">Download all your data</span>
+                                    </div>
+                                    <button class="btn-action-outline" onclick="exportAllData()">Export</button>
+                                </div>
+                                <div class="danger-item">
+                                    <div class="danger-info">
+                                        <span class="danger-title">Delete Account</span>
+                                        <span class="danger-desc">Permanently delete your account</span>
+                                    </div>
+                                    <button class="btn-action-danger" onclick="confirmDeleteAccount()">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="analysis-loading" class="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="spinner-advanced">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <p class="loading-text">Analyzing Content...</p>
+            <p id="loading-subtext" class="loading-subtext">Our AI is scanning for patterns</p>
+        </div>
+    </div>
+
+    <!-- Toast Container (required by showToast) -->
+    <div id="toast-container"></div>
+
+    <!-- Modal Container (required by showModal) -->
+    <div id="modal-container"></div>
+
+    <!-- Chart Data Bridge -->
+    <div id="chart-data" data-real-count="{{ real_count|default(0) }}"
+        data-fake-count="{{ fake_count|default(0) }}"
+        data-activity-data="{{ activity_data | tojson if activity_data else '[2, 4, 3, 5, 2, 4, 3]' }}"
+        data-real-trend="{{ real_trend | tojson if real_trend else '[5, 8, 6, 10]' }}"
+        data-fake-trend="{{ fake_trend | tojson if fake_trend else '[2, 3, 4, 2]' }}"
+        data-high-confidence="{{ high_confidence | default(60) }}"
+        data-med-confidence="{{ med_confidence | default(30) }}"
+        data-low-confidence="{{ low_confidence | default(10) }}"
+        data-activity-labels="{{ ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] | tojson }}"
+        style="display: none;"></div>
+
+    <!-- External JavaScript -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}?v=3"></script>
+</body>
+
+</html>

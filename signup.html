@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta charset="UTF-8">
+    <title>Sign Up | Fake News Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+
+<body>
+    <div class="background-gradient"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <h2 class="nav-title">
+            <a href="/">Fake News Detection</a>
+        </h2>
+
+        <div>
+            <a href="/login" class="nav-btn">Login</a>
+        </div>
+    </nav>
+
+    <!-- Background blobs -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+
+    <!-- Auth Container -->
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1>Create Account</h1>
+            <p>Join us to verify news with AI</p>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}"
+                style="padding: 12px; margin-bottom: 15px; border-radius: 8px; font-size: 14px; {% if category == 'error' %}background-color: #fee; border: 1px solid #fcc; color: #c33;{% else %}background-color: #efe; border: 1px solid #cfc; color: #3c3;{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="/signup">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+                <label>Name</label>
+                <input type="text" name="name" placeholder="Enter your name" required>
+
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Enter your email" required>
+
+                <label>Phone Number</label>
+                <input type="tel" name="phone" placeholder="Enter your phone number" required>
+
+                <label>Country</label>
+                <input type="text" name="country" placeholder="Enter your country" required>
+
+                <label>Password</label>
+                <input type="password" name="password" id="signup-password" placeholder="Create a password" required oninput="checkPasswordStrength(this.value)">
+                
+                <!-- Password Strength Meter -->
+                <div id="pw-strength-container" style="margin-top:6px; margin-bottom:10px; display:none;">
+                    <div style="display:flex; gap:4px; height:5px; margin-bottom:6px;">
+                        <div id="pw-bar-1" style="flex:1; background:#e0e0e0; border-radius:3px; transition:background 0.3s;"></div>
+                        <div id="pw-bar-2" style="flex:1; background:#e0e0e0; border-radius:3px; transition:background 0.3s;"></div>
+                        <div id="pw-bar-3" style="flex:1; background:#e0e0e0; border-radius:3px; transition:background 0.3s;"></div>
+                        <div id="pw-bar-4" style="flex:1; background:#e0e0e0; border-radius:3px; transition:background 0.3s;"></div>
+                    </div>
+                    <span id="pw-strength-label" style="font-size:12px; font-weight:600;"></span>
+                    <ul id="pw-requirements" style="list-style:none; padding:0; margin:6px 0 0; font-size:12px; color:#888;">
+                        <li id="pw-req-len">&#10060; At least 8 characters</li>
+                        <li id="pw-req-upper">&#10060; One uppercase letter</li>
+                        <li id="pw-req-lower">&#10060; One lowercase letter</li>
+                        <li id="pw-req-digit">&#10060; One digit</li>
+                        <li id="pw-req-special">&#10060; One special character</li>
+                    </ul>
+                </div>
+
+                <label>Confirm Password</label>
+                <input type="password" name="confirm_password" placeholder="Confirm your password" required>
+
+                <div class="g-recaptcha" data-sitekey="{{ RECAPTCHA_SITE_KEY }}" style="margin-bottom:15px;"></div>
+                <button type="submit" class="btn btn-primary">
+                    Sign Up
+                </button>
+            </form>
+
+            <p class="auth-footer">
+                Already have an account?
+                <a href="/login">Login</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© Fake News Detection System – IBM Training Project</p>
+    </footer>
+
+    <script>
+    function checkPasswordStrength(pw) {
+        var container = document.getElementById('pw-strength-container');
+        if (!pw) { container.style.display = 'none'; return; }
+        container.style.display = 'block';
+
+        var checks = {
+            len: pw.length >= 8,
+            upper: /[A-Z]/.test(pw),
+            lower: /[a-z]/.test(pw),
+            digit: /[0-9]/.test(pw),
+            special: /[!@#$%^&*(),.?":{}|<>]/.test(pw)
+        };
+
+        var pass = '&#10004;', fail = '&#10060;';
+        document.getElementById('pw-req-len').innerHTML   = (checks.len ? pass : fail) + ' At least 8 characters';
+        document.getElementById('pw-req-upper').innerHTML  = (checks.upper ? pass : fail) + ' One uppercase letter';
+        document.getElementById('pw-req-lower').innerHTML  = (checks.lower ? pass : fail) + ' One lowercase letter';
+        document.getElementById('pw-req-digit').innerHTML  = (checks.digit ? pass : fail) + ' One digit';
+        document.getElementById('pw-req-special').innerHTML= (checks.special ? pass : fail) + ' One special character';
+
+        // Color met/unmet
+        ['len','upper','lower','digit','special'].forEach(function(k){
+            document.getElementById('pw-req-' + k).style.color = checks[k] ? '#16a34a' : '#dc2626';
+        });
+
+        var score = Object.values(checks).filter(Boolean).length;
+        var bars = [document.getElementById('pw-bar-1'), document.getElementById('pw-bar-2'), document.getElementById('pw-bar-3'), document.getElementById('pw-bar-4')];
+        var colors = ['#dc2626','#f97316','#f59e0b','#16a34a'];
+        var labels = ['Weak','Fair','Good','Strong'];
+        var level = score <= 1 ? 0 : score <= 2 ? 1 : score <= 4 ? 2 : 3;
+
+        bars.forEach(function(b, i){ b.style.background = i <= level ? colors[level] : '#e0e0e0'; });
+        var label = document.getElementById('pw-strength-label');
+        label.textContent = labels[level];
+        label.style.color = colors[level];
+    }
+    </script>
+
+</body>
+
+</html>

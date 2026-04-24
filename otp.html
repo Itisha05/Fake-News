@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta charset="UTF-8">
+    <title>Verify OTP | Fake News Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="background-gradient"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <h2 class="nav-title">
+            <a href="/">Fake News Detection</a>
+        </h2>
+    </nav>
+
+    <!-- Background blobs -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <!-- Auth Container -->
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1>Verify OTP</h1>
+            <p>A 6-digit code has been sent to your phone</p>
+
+            <form method="POST" action="/verify_otp">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <label>Enter OTP</label>
+                <input type="text" name="otp" placeholder="123456" pattern="\d{6}" required maxlength="6">
+
+                <button type="submit" class="btn btn-primary">
+                    Verify OTP
+                </button>
+            </form>
+
+            <p class="auth-footer">
+                Back to <a href="/login">Login</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© Fake News Detection System – IBM Training Project</p>
+    </footer>
+
+</body>
+
+</html>
