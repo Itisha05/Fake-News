@@ -1,0 +1,47 @@
+[
+    {
+        "id": 1,
+        "text": "5G causes coronavirus....",
+        "tokens": 6,
+        "logit_0": 0.877336323261261,
+        "logit_1": -0.7567970752716064,
+        "prob_fake": 83.67350697517395,
+        "prob_real": 16.32649302482605
+    },
+    {
+        "id": 2,
+        "text": "5G Towers Linked to Rapid Spre...",
+        "tokens": 16,
+        "logit_0": -3.83798885345459,
+        "logit_1": 3.6753883361816406,
+        "prob_fake": 0.05454372731037438,
+        "prob_real": 99.94545578956604
+    },
+    {
+        "id": 3,
+        "text": "Recent reports circulating onl...",
+        "tokens": 75,
+        "logit_0": -4.621549129486084,
+        "logit_1": 4.710902690887451,
+        "prob_fake": 0.008849713776726276,
+        "prob_real": 99.99115467071533
+    },
+    {
+        "id": 4,
+        "text": "asdlkfj qwerlkj asdfzxczv...",
+        "tokens": 15,
+        "logit_0": 4.2522664070129395,
+        "logit_1": -4.126226902008057,
+        "prob_fake": 99.97703433036804,
+        "prob_real": 0.02297030878253281
+    },
+    {
+        "id": 5,
+        "text": "Hello...",
+        "tokens": 1,
+        "logit_0": 4.204878330230713,
+        "logit_1": -4.116486072540283,
+        "prob_fake": 99.97567534446716,
+        "prob_real": 0.024320455850102007
+    }
+]

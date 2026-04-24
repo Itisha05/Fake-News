@@ -1,0 +1,31 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Mac OS files
+__MACOSX/
+.DS_Store
+
+# Large datasets and ML Models
+*.csv
+*.h5
+*.pkl
+*.zip
+*.safetensors
+fake_news_bert_model/
+fake_news_model_download/
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
